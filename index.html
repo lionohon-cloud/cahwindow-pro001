@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>그린리모델링 이자지원 사업 | 청암홈윈도우</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#0D1B2A; --green:#1A6B3C; --mint:#2ECC71;
+  --cream:#F4F8F4; --gold:#E8A020; --gray:#94A3B8;
+  --lgray:#E8F0EC; --red:#E53E3E; --white:#fff;
+}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Noto Sans KR',sans-serif;background:#000;}
+
+/* ── SLIDE CONTAINER ── */
+.deck{width:100vw;height:100vh;position:relative;}
+.slide{
+  position:absolute;inset:0;
+  width:100%;height:100%;
+  display:none;flex-direction:column;
+  opacity:0;transition:opacity .45s ease;
+}
+.slide.active{display:flex;opacity:1;}
+.slide.prev{display:flex;opacity:0;}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:16px;z-index:100;
+  background:rgba(0,0,0,.55);padding:10px 22px;border-radius:40px;
+  backdrop-filter:blur(8px);
+}
+.nav-btn{
+  background:none;border:none;cursor:pointer;color:#fff;
+  font-size:22px;line-height:1;padding:4px 8px;
+  opacity:.7;transition:opacity .2s;
+}
+.nav-btn:hover{opacity:1;}
+.dots{display:flex;gap:8px;align-items:center;}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.35);cursor:pointer;
+  transition:all .2s;
+}
+.dot.on{background:var(--mint);width:24px;border-radius:4px;}
+.slide-num{color:var(--gray);font-size:13px;min-width:36px;text-align:center;}
+
+/* ── KEYBOARD HINT ── */
+.hint{
+  position:fixed;top:18px;right:24px;font-size:11px;
+  color:rgba(255,255,255,.3);z-index:100;pointer-events:none;
+}
+
+/* ════════════════════════════════════
+   SLIDE 1 — 표지
+════════════════════════════════════ */
+#s1{background:var(--navy);overflow:hidden;}
+.s1-bar-left{position:absolute;left:0;top:0;width:clamp(18px,1.4vw,22px);height:100%;background:var(--green);}
+.s1-top{
+  position:absolute;top:0;left:clamp(18px,1.4vw,22px);right:0;height:clamp(44px,7.5vh,58px);
+  background:#142A1E;display:flex;align-items:center;justify-content:space-between;padding:0 24px;
+}
+.s1-brand{font-size:clamp(13px,1.4vw,17px);font-weight:700;color:var(--mint);}
+.s1-subbrand{font-size:clamp(11px,1.1vw,13px);color:var(--gray);}
+.s1-main{
+  position:absolute;left:clamp(40px,5vw,80px);
+  top:clamp(70px,14vh,110px);
+}
+.s1-line1{font-size:clamp(28px,4.2vw,52px);color:var(--cream);font-weight:300;line-height:1.25;}
+.s1-line2{font-size:clamp(28px,4.2vw,52px);color:var(--cream);font-weight:300;line-height:1.25;}
+.s1-line3{font-size:clamp(34px,5vw,62px);color:var(--mint);font-weight:900;line-height:1.25;margin-top:4px;}
+.s1-sub{font-size:clamp(12px,1.2vw,15px);color:var(--gray);margin-top:clamp(14px,2.5vh,26px);}
+.s1-badge{
+  position:absolute;right:clamp(30px,5vw,80px);
+  top:clamp(80px,15vh,120px);
+  width:clamp(140px,17vw,220px);
+  background:#142A1E;border:1.5px solid var(--green);border-radius:12px;
+  padding:clamp(14px,2.5vh,24px);text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);
+}
+.s1-badge-lbl{font-size:clamp(11px,1vw,13px);color:var(--gray);margin-bottom:6px;}
+.s1-badge-num{font-size:clamp(36px,5.5vw,68px);font-weight:900;color:var(--mint);line-height:1;}
+.s1-badge-desc{font-size:clamp(12px,1.1vw,14px);color:var(--white);font-weight:700;margin-top:8px;}
+.s1-badge-sub{font-size:clamp(10px,.9vw,12px);color:var(--gray);margin-top:4px;}
+.s1-footer{
+  position:absolute;bottom:0;left:clamp(18px,1.4vw,22px);right:0;
+  height:clamp(34px,6vh,48px);background:var(--green);
+  display:flex;align-items:center;padding:0 24px;
+}
+.s1-footer-txt{font-size:clamp(11px,1.1vw,13px);color:var(--white);font-weight:700;}
+
+/* ════════════════════════════════════
+   SLIDE 2 — 자격 확인
+════════════════════════════════════ */
+#s2{background:var(--cream);}
+.s2-header{
+  background:var(--navy);padding:clamp(10px,2vh,18px) clamp(20px,3vw,40px);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+}
+.s2-title{font-size:clamp(20px,3vw,34px);color:#fff;font-weight:900;}
+.s2-badge{font-size:clamp(11px,1.1vw,13px);color:var(--mint);font-weight:700;}
+.s2-cards{
+  flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,2vw,22px);
+  padding:clamp(16px,3vh,30px) clamp(20px,3vw,40px);min-height:0;
+}
+.s2-card{
+  background:#fff;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 4px 20px rgba(0,0,0,.08);
+  border:1.5px solid #C8DEC8;
+}
+.s2-card.warn{border-color:#EDD8B0;}
+.s2-card-body{flex:1;padding:clamp(14px,2.5vh,24px) clamp(14px,2vw,22px);}
+.s2-num{
+  width:clamp(32px,4vw,46px);height:clamp(32px,4vw,46px);border-radius:50%;
+  background:var(--green);display:flex;align-items:center;justify-content:center;
+  font-size:clamp(12px,1.3vw,16px);font-weight:900;color:#fff;margin-bottom:clamp(10px,2vh,18px);
+}
+.s2-card.warn .s2-num{background:var(--gold);}
+.s2-card-title{font-size:clamp(14px,1.6vw,20px);font-weight:700;color:var(--navy);margin-bottom:8px;}
+.s2-divider{height:3px;background:var(--green);border-radius:2px;margin-bottom:clamp(10px,2vh,16px);}
+.s2-card.warn .s2-divider{background:var(--gold);}
+.s2-card-main{font-size:clamp(16px,2.2vw,26px);font-weight:900;color:var(--navy);line-height:1.35;text-align:center;}
+.s2-card-foot{
+  padding:clamp(8px,1.2vh,14px) clamp(14px,2vw,22px);
+  background:#EDF7EE;font-size:clamp(10px,1vw,12px);color:var(--green);text-align:center;
+}
+.s2-card.warn .s2-card-foot{background:#FEF3E2;color:#8B5E1A;}
+.s2-notice{
+  margin:0 clamp(20px,3vw,40px) clamp(10px,2vh,16px);
+  background:#EDF7EE;border:1px solid var(--green);border-radius:8px;
+  padding:clamp(8px,1.2vh,12px) clamp(14px,2vw,22px);
+  font-size:clamp(11px,1.1vw,13px);color:var(--green);font-weight:700;
+}
+
+/* ════════════════════════════════════
+   SLIDE 3 — 혜택 금액
+════════════════════════════════════ */
+#s3{background:var(--navy);overflow:hidden;}
+.s3-head{padding:clamp(14px,2.5vh,22px) clamp(24px,3.5vw,48px);flex-shrink:0;}
+.s3-title{font-size:clamp(20px,3vw,34px);color:#fff;font-weight:900;}
+.s3-sub{font-size:clamp(11px,1.1vw,14px);color:var(--gray);margin-top:4px;}
+.s3-body{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,22px);
+  padding:0 clamp(24px,3.5vw,48px);min-height:0;
+}
+.s3-left,.s3-right{
+  background:#0A2218;border:1px solid var(--green);border-radius:12px;
+  padding:clamp(14px,2.5vh,26px);display:flex;flex-direction:column;
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+}
+.s3-lbl{font-size:clamp(11px,1.1vw,13px);color:var(--gray);margin-bottom:4px;}
+.s3-lbl2{font-size:clamp(11px,1.1vw,13px);color:var(--gray);margin-top:clamp(10px,2vh,18px);}
+.s3-big-red{font-size:clamp(28px,4.5vw,56px);font-weight:900;color:#FF6B6B;line-height:1.1;}
+.s3-divider{height:2px;background:#2A4A3A;margin:clamp(10px,2vh,18px) 0;}
+.s3-big-mint{font-size:clamp(36px,6vw,72px);font-weight:900;color:var(--mint);line-height:1.0;}
+.s3-mint-lbl{font-size:clamp(11px,1.1vw,13px);color:var(--mint);margin-top:2px;}
+.s3-right-title{font-size:clamp(12px,1.2vw,14px);color:var(--gray);font-weight:700;margin-bottom:clamp(8px,1.5vh,14px);}
+.s3-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:clamp(6px,1.1vh,10px) clamp(10px,1.3vw,16px);border-radius:6px;
+  margin-bottom:4px;
+}
+.s3-row.ok{background:#0D3322;border:1px solid #1A5A34;}
+.s3-row.no{background:#0A2218;border:1px solid #2A3A2A;}
+.s3-row-lbl{font-size:clamp(12px,1.2vw,14px);color:var(--gray);}
+.s3-row-val{font-size:clamp(13px,1.4vw,16px);font-weight:700;}
+.s3-row.ok .s3-row-val{color:var(--mint);}
+.s3-row.no .s3-row-val{color:#888;}
+.s3-pref{
+  background:var(--green);border-radius:6px;
+  padding:clamp(7px,1.2vh,11px) clamp(10px,1.3vw,16px);margin-top:6px;
+  font-size:clamp(11px,1.1vw,12.5px);color:#fff;font-weight:700;
+}
+.s3-footer{
+  margin:clamp(10px,1.8vh,16px) clamp(24px,3.5vw,48px) clamp(14px,2.5vh,20px);
+  background:var(--gold);border-radius:8px;
+  padding:clamp(8px,1.3vh,12px) clamp(16px,2vw,24px);
+  font-size:clamp(11px,1.1vw,13px);color:var(--navy);font-weight:700;text-align:center;
+  flex-shrink:0;
+}
+
+/* ════════════════════════════════════
+   SLIDE 4 — 홈윈도우GR
+════════════════════════════════════ */
+#s4{background:var(--cream);}
+.s4-header{
+  background:var(--navy);padding:clamp(10px,2vh,18px) clamp(20px,3vw,40px);
+  display:flex;align-items:center;flex-shrink:0;
+}
+.s4-title{font-size:clamp(18px,2.6vw,30px);color:#fff;font-weight:900;}
+.s4-body{
+  flex:1;display:grid;grid-template-columns:1fr 1fr;gap:clamp(14px,2vw,24px);
+  padding:clamp(16px,3vh,28px) clamp(20px,3vw,40px);min-height:0;
+}
+.s4-left{
+  background:#fff;border-radius:12px;padding:clamp(16px,3vh,28px) clamp(16px,2.5vw,26px);
+  border:1.5px solid #C8DEC8;box-shadow:0 4px 20px rgba(0,0,0,.08);
+  display:flex;flex-direction:column;
+}
+.s4-prod-name{font-size:clamp(18px,2.4vw,28px);font-weight:900;color:var(--green);margin-bottom:clamp(12px,2.2vh,20px);}
+.s4-spec-row{
+  display:flex;align-items:baseline;gap:8px;
+  font-size:clamp(13px,1.4vw,16px);color:var(--navy);margin-bottom:clamp(6px,1vh,10px);
+}
+.s4-spec-row .eq{color:var(--gray);font-weight:300;}
+.s4-spec-row .pl{color:var(--green);font-weight:700;}
+.s4-divider2{height:1px;background:var(--lgray);margin:clamp(12px,2vh,18px) 0;}
+.s4-disc-lbl{font-size:clamp(11px,1.1vw,13px);color:var(--gray);margin-bottom:4px;}
+.s4-disc-num{font-size:clamp(36px,5.5vw,60px);font-weight:900;color:var(--gold);line-height:1;}
+.s4-disc-sub{font-size:clamp(10px,.95vw,11.5px);color:var(--gray);font-style:italic;margin-top:6px;}
+.s4-right{display:flex;flex-direction:column;gap:clamp(8px,1.3vh,13px);justify-content:center;}
+.s4-check-title{font-size:clamp(13px,1.4vw,16px);font-weight:700;color:var(--navy);margin-bottom:clamp(4px,0.8vh,8px);}
+.s4-item{
+  display:flex;align-items:center;gap:clamp(8px,1vw,14px);
+  padding:clamp(8px,1.4vh,14px) clamp(12px,1.5vw,18px);border-radius:8px;border:1px solid;
+}
+.s4-item.ok{background:#EDF7EE;border-color:#C8DEC8;}
+.s4-item.no{background:#FEF2F2;border-color:#FCA5A5;}
+.s4-icon{
+  width:clamp(24px,2.8vw,34px);height:clamp(24px,2.8vw,34px);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:clamp(12px,1.3vw,15px);font-weight:900;color:#fff;
+}
+.s4-item.ok .s4-icon{background:var(--green);}
+.s4-item.no .s4-icon{background:var(--red);}
+.s4-item-txt{font-size:clamp(13px,1.4vw,16px);font-weight:700;}
+.s4-item.ok .s4-item-txt{color:var(--green);}
+.s4-item.no .s4-item-txt{color:var(--red);}
+
+/* ════════════════════════════════════
+   SLIDE 5 — 절차
+════════════════════════════════════ */
+#s5{background:var(--navy);}
+.s5-head{padding:clamp(14px,2.5vh,22px) clamp(24px,3.5vw,48px);flex-shrink:0;}
+.s5-title{font-size:clamp(20px,3vw,34px);color:#fff;font-weight:900;}
+.s5-steps{
+  flex:1;display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(8px,1.2vw,16px);
+  padding:0 clamp(24px,3.5vw,48px);min-height:0;align-items:stretch;
+}
+.s5-step{
+  background:#0A2218;border:1.5px solid var(--green);border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;padding:clamp(14px,2.5vh,22px) clamp(8px,1vw,14px);
+  box-shadow:0 4px 20px rgba(0,0,0,.3);
+}
+.s5-num{
+  width:clamp(36px,4.5vw,52px);height:clamp(36px,4.5vw,52px);border-radius:50%;
+  background:var(--green);display:flex;align-items:center;justify-content:center;
+  font-size:clamp(15px,1.8vw,22px);font-weight:900;color:#fff;flex-shrink:0;
+  margin-bottom:clamp(10px,1.8vh,16px);
+}
+.s5-step-title{font-size:clamp(13px,1.4vw,17px);font-weight:700;color:#fff;text-align:center;margin-bottom:8px;}
+.s5-divider3{width:60%;height:2px;background:#1A4A2A;margin-bottom:clamp(8px,1.4vh,14px);}
+.s5-desc{font-size:clamp(10px,1.05vw,13px);color:var(--gray);text-align:center;line-height:1.5;}
+.s5-notices{
+  display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.5vw,18px);
+  padding:clamp(10px,1.8vh,16px) clamp(24px,3.5vw,48px) clamp(14px,2.5vh,20px);
+  flex-shrink:0;
+}
+.s5-notice{
+  border-radius:8px;padding:clamp(8px,1.2vh,12px) clamp(12px,1.5vw,20px);
+  font-size:clamp(11px,1.1vw,13px);font-weight:700;
+}
+.s5-notice.danger{background:#0A2218;border:1.5px solid var(--red);color:#FF6B6B;}
+.s5-notice.star{background:#0A2218;border:1.5px solid var(--gold);color:var(--gold);}
+
+/* ════════════════════════════════════
+   SLIDE 6 — CTA
+════════════════════════════════════ */
+#s6{background:var(--green);}
+.s6-main{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+  padding:clamp(24px,4vh,44px) clamp(20px,3vw,40px) 0;
+}
+.s6-title{font-size:clamp(32px,5.5vw,68px);color:#fff;font-weight:900;text-align:center;}
+.s6-sub{font-size:clamp(15px,1.8vw,22px);color:#C8F0D8;text-align:center;margin-top:clamp(8px,1.5vh,14px);}
+.s6-cards{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(10px,1.8vw,22px);
+  width:100%;margin-top:clamp(16px,3vh,30px);
+}
+.s6-card{
+  background:#145A2C;border:1.5px solid #2A8A4A;border-radius:12px;
+  padding:clamp(14px,2.5vh,24px) clamp(12px,1.5vw,20px);text-align:center;
+  box-shadow:0 4px 20px rgba(0,0,0,.2);
+}
+.s6-card-num{font-size:clamp(18px,2.2vw,26px);color:var(--mint);font-weight:900;margin-bottom:clamp(8px,1.5vh,14px);}
+.s6-card-title{font-size:clamp(14px,1.7vw,20px);color:#fff;font-weight:700;margin-bottom:clamp(8px,1.3vh,12px);}
+.s6-card-desc{font-size:clamp(11px,1.1vw,13px);color:#C8F0D8;line-height:1.5;}
+.s6-footer{
+  background:var(--navy);padding:clamp(10px,2vh,18px) clamp(24px,3.5vw,48px);
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0;flex-wrap:wrap;gap:8px;
+}
+.s6-tel-lbl{font-size:clamp(11px,1.1vw,13px);color:var(--gray);}
+.s6-tel{font-size:clamp(18px,2.4vw,28px);font-weight:900;color:#fff;display:flex;align-items:center;gap:8px;}
+.s6-tel-icon{font-size:clamp(16px,2vw,22px);}
+.s6-foot-info{font-size:clamp(10px,1vw,12px);color:var(--gray);text-align:right;}
+
+/* ── 반응형 ── */
+@media(max-width:700px){
+  .s2-cards,.s3-body,.s4-body,.s5-steps,.s6-cards{grid-template-columns:1fr;}
+  .s5-steps{grid-template-columns:repeat(2,1fr);}
+  .s6-cards{grid-template-columns:1fr;}
+  .s5-notices{grid-template-columns:1fr;}
+  .s3-body{grid-template-columns:1fr;}
+  .s4-body{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+<div class="deck">
+
+  <!-- ── SLIDE 1 표지 ── -->
+  <div class="slide active" id="s1">
+    <div class="s1-bar-left"></div>
+    <div class="s1-top">
+      <span class="s1-brand">청암홈윈도우</span>
+      <span class="s1-subbrand">그린리모델링 공식 사업자</span>
+    </div>
+    <div class="s1-main">
+      <div class="s1-line1">정부가</div>
+      <div class="s1-line2">창호 교체 이자를</div>
+      <div class="s1-line3">대신 내줍니다</div>
+      <div class="s1-sub">2026 민간건축물 그린리모델링 이자지원 사업</div>
+    </div>
+    <div class="s1-badge">
+      <div class="s1-badge-lbl">최대</div>
+      <div class="s1-badge-num">5.5%p</div>
+      <div class="s1-badge-desc">이자 지원</div>
+      <div class="s1-badge-sub">정부 대납</div>
+    </div>
+    <div class="s1-footer">
+      <span class="s1-footer-txt">계약 마감 4월 20일 &nbsp;|&nbsp; 시공 6월까지 &nbsp;|&nbsp; 예산 80억 선착순</span>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 2 자격 확인 ── -->
+  <div class="slide" id="s2">
+    <div class="s2-header">
+      <span class="s2-title">이 혜택, 나한테 되나요?</span>
+      <span class="s2-badge">자격 확인 3가지</span>
+    </div>
+    <div class="s2-cards">
+      <div class="s2-card">
+        <div class="s2-card-body">
+          <div class="s2-num">01</div>
+          <div class="s2-card-title">건물 준공연도</div>
+          <div class="s2-divider"></div>
+          <div class="s2-card-main">2016년 1월 이전<br>사용승인 건물</div>
+        </div>
+        <div class="s2-card-foot">건축물대장에서 확인 가능</div>
+      </div>
+      <div class="s2-card">
+        <div class="s2-card-body">
+          <div class="s2-num">02</div>
+          <div class="s2-card-title">집주인 = 계약자</div>
+          <div class="s2-divider"></div>
+          <div class="s2-card-main">등기상 소유자<br>본인이 신청</div>
+        </div>
+        <div class="s2-card-foot">배우자·자녀 명의 신청 불가</div>
+      </div>
+      <div class="s2-card warn">
+        <div class="s2-card-body">
+          <div class="s2-num">03</div>
+          <div class="s2-card-title">공사 전·중만 가능</div>
+          <div class="s2-divider"></div>
+          <div class="s2-card-main">완료된 공사는<br>신청 불가</div>
+        </div>
+        <div class="s2-card-foot">반드시 계약 후 즉시 신청</div>
+      </div>
+    </div>
+    <div class="s2-notice">✔ 9억 초과 고가주택은 은행 대출 불가이지만 카드 할부로 신청 가능합니다</div>
+  </div>
+
+  <!-- ── SLIDE 3 혜택 금액 ── -->
+  <div class="slide" id="s3">
+    <div class="s3-head">
+      <div class="s3-title">혜택이 얼마나 되나요?</div>
+      <div class="s3-sub">공사비 1,500만원 기준 · 은행금리 4% 적용 시</div>
+    </div>
+    <div class="s3-body">
+      <div class="s3-left">
+        <div class="s3-lbl">지원 전 &nbsp; 연 이자</div>
+        <div class="s3-big-red">600,000원</div>
+        <div class="s3-divider"></div>
+        <div class="s3-lbl2">지원 후 &nbsp; 연 이자</div>
+        <div class="s3-big-mint">0원</div>
+        <div class="s3-mint-lbl">실질 무이자 ✓</div>
+      </div>
+      <div class="s3-right">
+        <div class="s3-right-title">일반조건 4.5%p — 금리별 고객 실부담</div>
+        <div class="s3-row ok"><span class="s3-row-lbl">금리 3.5%</span><span class="s3-row-val">0원</span></div>
+        <div class="s3-row ok"><span class="s3-row-lbl">금리 4.0%</span><span class="s3-row-val">0원</span></div>
+        <div class="s3-row ok"><span class="s3-row-lbl">금리 4.5%</span><span class="s3-row-val">0원</span></div>
+        <div class="s3-row no"><span class="s3-row-lbl">금리 5.0%</span><span class="s3-row-val">75,000원</span></div>
+        <div class="s3-pref">⭐ 우대조건 5.5%p &nbsp;— 고령자(65세↑) · 신혼부부 · 다자녀 · 수급자 · 국가유공자</div>
+      </div>
+    </div>
+    <div class="s3-footer">카드 할부 (롯데·삼성) &nbsp;→&nbsp; 최대 36개월 완전 무이자 &nbsp;|&nbsp; 9억 초과 고가주택도 카드로 가능</div>
+  </div>
+
+  <!-- ── SLIDE 4 홈윈도우GR ── -->
+  <div class="slide" id="s4">
+    <div class="s4-header">
+      <span class="s4-title">GR 전용 제품 — 홈윈도우GR</span>
+    </div>
+    <div class="s4-body">
+      <div class="s4-left">
+        <div class="s4-prod-name">홈윈도우GR</div>
+        <div class="s4-spec-row"><span class="eq">=</span> 홈윈도우 시그니쳐</div>
+        <div class="s4-spec-row"><span class="pl">+</span> 그레이로이(Low-E) 유리</div>
+        <div class="s4-spec-row"><span class="pl">+</span> 일반창 자동핸들</div>
+        <div class="s4-divider2"></div>
+        <div class="s4-disc-lbl">GR 특별 지원 할인</div>
+        <div class="s4-disc-num">20% 할인</div>
+        <div class="s4-disc-sub">※ 다른 할인과 중복 불가, 20%만 적용</div>
+      </div>
+      <div class="s4-right">
+        <div class="s4-check-title">적용 가능 여부</div>
+        <div class="s4-item ok"><div class="s4-icon">✓</div><span class="s4-item-txt">발코니 단창</span></div>
+        <div class="s4-item ok"><div class="s4-icon">✓</div><span class="s4-item-txt">일반 단창</span></div>
+        <div class="s4-item ok"><div class="s4-icon">✓</div><span class="s4-item-txt">이중창</span></div>
+        <div class="s4-item no"><div class="s4-icon">✕</div><span class="s4-item-txt">공틀단창 (해당 없음)</span></div>
+        <div class="s4-item no"><div class="s4-icon">✕</div><span class="s4-item-txt">LX·홈CC 제품</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 5 절차 ── -->
+  <div class="slide" id="s5">
+    <div class="s5-head">
+      <div class="s5-title">어떻게 진행되나요?</div>
+    </div>
+    <div class="s5-steps">
+      <div class="s5-step">
+        <div class="s5-num">1</div>
+        <div class="s5-step-title">상담·계약</div>
+        <div class="s5-divider3"></div>
+        <div class="s5-desc">방문 견적 후<br>계약 체결</div>
+      </div>
+      <div class="s5-step">
+        <div class="s5-num">2</div>
+        <div class="s5-step-title">사업 신청</div>
+        <div class="s5-divider3"></div>
+        <div class="s5-desc">청암홈윈도우<br>대행 처리</div>
+      </div>
+      <div class="s5-step">
+        <div class="s5-num">3</div>
+        <div class="s5-step-title">대출 확정</div>
+        <div class="s5-divider3"></div>
+        <div class="s5-desc">고객 본인<br>은행 신청</div>
+      </div>
+      <div class="s5-step">
+        <div class="s5-num">4</div>
+        <div class="s5-step-title">시공</div>
+        <div class="s5-divider3"></div>
+        <div class="s5-desc">GR 전용 제품<br>으로 교체</div>
+      </div>
+      <div class="s5-step">
+        <div class="s5-num">5</div>
+        <div class="s5-step-title">대출 실행</div>
+        <div class="s5-divider3"></div>
+        <div class="s5-desc">공사 완료 후<br>이자지원 시작</div>
+      </div>
+    </div>
+    <div class="s5-notices">
+      <div class="s5-notice danger">⚠ 확인서 발급 전 공사 착수 절대 금지</div>
+      <div class="s5-notice star">★ 서류·신청은 청암홈윈도우가 전담 대행</div>
+    </div>
+  </div>
+
+  <!-- ── SLIDE 6 CTA ── -->
+  <div class="slide" id="s6">
+    <div class="s6-main">
+      <div class="s6-title">지금 시작하면</div>
+      <div class="s6-sub">이자 걱정 없이 새 창호를 갖게 됩니다</div>
+      <div class="s6-cards">
+        <div class="s6-card">
+          <div class="s6-card-num">①</div>
+          <div class="s6-card-title">예산 80억 선착순</div>
+          <div class="s6-card-desc">소진 즉시 종료<br>지금이 기회</div>
+        </div>
+        <div class="s6-card">
+          <div class="s6-card-num">②</div>
+          <div class="s6-card-title">계약 4월 20일 마감</div>
+          <div class="s6-card-desc">이 조건은<br>기간 한정</div>
+        </div>
+        <div class="s6-card">
+          <div class="s6-card-num">③</div>
+          <div class="s6-card-title">시공 6월까지</div>
+          <div class="s6-card-desc">일정 확보를<br>위해 빨리 계약</div>
+        </div>
+      </div>
+    </div>
+    <div class="s6-footer">
+      <div>
+        <div class="s6-tel-lbl">상담 및 문의</div>
+        <div class="s6-tel"><span class="s6-tel-icon">☎</span> 1661-4830</div>
+      </div>
+      <div class="s6-foot-info">청암홈윈도우 &nbsp;|&nbsp; GR 공식 사업자 &nbsp;|&nbsp; 그린리모델링 이자지원 전담</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── 네비게이션 ── -->
+<div class="nav">
+  <button class="nav-btn" id="prev" onclick="move(-1)">&#8249;</button>
+  <div class="dots" id="dots"></div>
+  <button class="nav-btn" id="next" onclick="move(1)">&#8250;</button>
+  <span class="slide-num" id="snum">1 / 6</span>
+</div>
+
+<div class="hint">← → 키 또는 클릭으로 이동</div>
+
+<script>
+const slides = document.querySelectorAll('.slide');
+const dotsEl = document.getElementById('dots');
+const snumEl = document.getElementById('snum');
+let cur = 0;
+const total = slides.length;
+
+// 도트 생성
+slides.forEach((_, i) => {
+  const d = document.createElement('div');
+  d.className = 'dot' + (i === 0 ? ' on' : '');
+  d.onclick = () => go(i);
+  dotsEl.appendChild(d);
+});
+
+function go(n) {
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('prev');
+  setTimeout(() => slides[cur].classList.remove('prev'), 500);
+  cur = (n + total) % total;
+  slides[cur].classList.add('active');
+  document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('on', i === cur));
+  snumEl.textContent = (cur + 1) + ' / ' + total;
+}
+
+function move(dir) { go(cur + dir); }
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') move(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   move(-1);
+});
+
+// 터치 스와이프
+let tx = 0;
+document.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive:true });
+document.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 50) move(dx < 0 ? 1 : -1);
+}, { passive:true });
+</script>
+</body>
+</html>
